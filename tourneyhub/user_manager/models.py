@@ -9,6 +9,7 @@ class UserType(models.Model):
 
 class CustomUser(AbstractUser):
     age = models.PositiveIntegerField(null=True, blank=True)
+    date_of_birth = models.DateField(null=True)
     bio = models.TextField(max_length=500, blank=True)
     phone = models.CharField(max_length=20, blank=False, null=False, verbose_name='Phone Number')
     user_types = models.ManyToManyField(UserType)
