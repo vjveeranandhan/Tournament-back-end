@@ -15,7 +15,7 @@ from datetime import datetime
 @ratelimit(key='ip', rate='5/m', block=True)
 @api_view(['POST'])
 def create_user(request):
-    # try:
+    try:
         if request.method == 'POST':
             _data = request.data
             if 'first_name' in _data:
@@ -63,13 +63,14 @@ def create_user(request):
             return Response(serializer.errors)
         else:
             return Response(status= status.HTTP_405_METHOD_NOT_ALLOWED)
-    # except:
-    #     return Response(status= status.HTTP_400_BAD_REQUEST)
+    except:
+        return Response(status= status.HTTP_400_BAD_REQUEST)
 
 @ratelimit(key='ip', rate='10/m', block=True)
 @api_view(['POST'])
 def user_login(request):
     try:
+        print(request.data)
         if request.method == 'POST':
             serializer = LoginSerializer(data=request.data)
             if serializer.is_valid():
@@ -80,7 +81,7 @@ def user_login(request):
                 
                 if user is not None:
                     token, _ = Token.objects.get_or_create(user=user)
-                    return Response({'token': token.key}, status=status.HTTP_200_OK)
+                    return Response({'token': token.key, 'user_id': user.id}, status=status.HTTP_200_OK)
                 else:
                     return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
             else:
