@@ -11,6 +11,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
 from datetime import date
 from . user_data_validation import validate_user_data
+from django.shortcuts import get_object_or_404
 
 
 @ratelimit(key='ip', rate='5/m', block=True)
@@ -18,9 +19,9 @@ from . user_data_validation import validate_user_data
 def create_user(request):
     try:
         if request.method == 'POST':
-            check_status = validate_user_data(request.data)[0]
-            if check_status ==  False:
-                check_status_response = validate_user_data(request.data)[1]
+            validation_check_status = validate_user_data(request.data, 'user-creation')
+            if validation_check_status[0] ==  False:
+                check_status_response = validation_check_status[1]
                 return Response({"message":check_status_response}, status=status.HTTP_406_NOT_ACCEPTABLE)
             _data = request.data
             serializer = UserSerializer(data= _data, many = False)
@@ -82,5 +83,33 @@ def get_user(request):
             serializer = UserRetrieveSerializer(user)
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response({'message': 'Invalid credentials!'}, status=status.HTTP_401_UNAUTHORIZED)
+    except Exception as e:
+        return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    
+
+@api_view(['PUT'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def update_user(request):
+    try:
+        if request.method == 'PUT':
+            _data = request.data
+            print(_data, "data")
+            validation_check_response = validate_user_data(_data, 'user-update')
+            print(validation_check_response)
+            if validation_check_response[0] ==  False:
+                    check_status_response = validation_check_response[1]
+                    return Response({"message":check_status_response}, status=status.HTTP_406_NOT_ACCEPTABLE)
+            user = get_object_or_404(CustomUser, id=_data['id'])
+            
+            user.first_name = _data['first_name']
+            user.last_name = _data['last_name']
+            user.username = _data['email']
+            user.email = _data['email']
+            user.date_of_birth = _data['date_of_birth']
+            user.phone = _data['phone']
+            user.save()
+            return Response({'message': 'Updated succesfully!'}, status=status.HTTP_200_OK)
+            
     except Exception as e:
         return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
