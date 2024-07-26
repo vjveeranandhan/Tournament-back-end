@@ -8,7 +8,6 @@ from rest_framework.authtoken.models import Token
 from django_ratelimit.decorators import ratelimit # type: ignore
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.authentication import TokenAuthentication
 from datetime import date
 from . user_data_validation import validate_user_data
 from django.shortcuts import get_object_or_404
@@ -33,8 +32,7 @@ def create_user(request):
                 user.save()
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
             return Response(serializer.errors)
-        else:
-            return Response(status= status.HTTP_405_METHOD_NOT_ALLOWED)
+        return Response(status= status.HTTP_405_METHOD_NOT_ALLOWED)
     except:
         return Response(status= status.HTTP_400_BAD_REQUEST)
 
@@ -48,9 +46,7 @@ def user_login(request):
             if serializer.is_valid():
                 username = serializer.validated_data['username']
                 password = serializer.validated_data['password']
-
                 user = authenticate(username=username, password=password)
-                
                 if user is not None:
                     token, _ = Token.objects.get_or_create(user=user)
                     return Response({'token': token.key, 'user_id': user.id}, status=status.HTTP_200_OK)
@@ -101,15 +97,14 @@ def update_user(request):
                     check_status_response = validation_check_response[1]
                     return Response({"message":check_status_response}, status=status.HTTP_406_NOT_ACCEPTABLE)
             user = get_object_or_404(CustomUser, id=_data['id'])
-            
             user.first_name = _data['first_name']
             user.last_name = _data['last_name']
             user.username = _data['email']
             user.email = _data['email']
             user.date_of_birth = _data['date_of_birth']
             user.phone = _data['phone']
+            user.age = _data['age']
             user.save()
             return Response({'message': 'Updated succesfully!'}, status=status.HTTP_200_OK)
-            
     except Exception as e:
         return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)

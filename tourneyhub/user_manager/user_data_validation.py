@@ -13,15 +13,12 @@ def validate_user_data(data, activity):
         if activity == 'user-update':
             if 'id' not in data:
                 return False, "User id missing!"
-
         if 'first_name' in data:
             if data['first_name'] is None:
                 return False, "First name should not be Null!"
-        
         if 'last_name' in data:
             if data['last_name'] is None:
                 return False, "Last nmae should not be Null!"
-        
         if 'email' in data:
             if data['email'] is not None:
                 if activity == 'user-update':
@@ -34,9 +31,7 @@ def validate_user_data(data, activity):
                 return False, "Email should not be Null!"
             data['username'] = data['email']
         else:
-            print("Email is missing")
             return False, "Email is missing!"
-        
         if 'phone' in data:
             if data['phone'] is not None:
                 if activity == 'user-update':
@@ -45,7 +40,6 @@ def validate_user_data(data, activity):
                             return False, "Phone number alrady exists!"
                     else:
                         return False, "Invalid phone number!"
-                    
                 else:
                     if CustomUser.objects.filter(phone= data['phone']).exists():
                         return False, "Phone number alrady exists!"
@@ -53,21 +47,16 @@ def validate_user_data(data, activity):
                 return False, "Phone Number should not be Null!"
         else:
             return False, "Phone number is missing!"
-        
         if 'dateofbirth' in data:
             if data['dateofbirth'] is None:
                 return False, "Date of Birth is missing!"
-            
         if activity == 'user-creation':
             if len(data['password']) < min_length:
                 return False, f"Password must be at least {min_length} characters long."
-            
             if not re.match(regex, data['password']):
                 return False, "Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character."
-            
             if data['password'] != data['confirm_password']:
                 return False, "Passwords do not match."
-        
         return True, "Valid."
     except:
         return False, "Something went wrong. Please Try agan later."

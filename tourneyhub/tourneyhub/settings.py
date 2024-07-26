@@ -44,7 +44,8 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework',
     'rest_framework.authtoken',
-    'user_manager'
+    'user_manager',
+    'club'
 ]
 
 MIDDLEWARE = [
