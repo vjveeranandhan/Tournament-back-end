@@ -5,8 +5,6 @@ def validate_user_data(data, activity):
     phone_number_pattern = r'^[6-9]\d{9}$'
     phone_number_regex = re.compile(phone_number_pattern)
     try:
-        print(activity)
-        print("# Minimum password length")
         min_length = 8
         regex = r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$"
 

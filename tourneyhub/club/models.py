@@ -3,6 +3,7 @@ from django.conf import settings
 
 class Club(models.Model):
     club_name = models.CharField(max_length=100)
+    description = models.CharField(max_length=300)
     country = models.CharField(max_length=100)
     state = models.CharField(max_length=100)
     district = models.CharField(max_length=100)
